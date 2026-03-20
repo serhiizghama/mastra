@@ -7,7 +7,8 @@ import type { ZodSchema, z as z3 } from 'zod/v3';
 import { z } from 'zod/v4';
 import type { MastraPrimitives, MastraUnion } from '../action';
 import { MastraBase } from '../base';
-import type { MastraChannel } from '../channels/base';
+import { MastraChannel } from '../channels/base';
+import { ChatAdapterChannel } from '../channels/chat-adapter/channel';
 import { MastraError, ErrorDomain, ErrorCategory } from '../error';
 import type {
   ScorerRunInputForAgent,
@@ -300,8 +301,10 @@ export class Agent<
     }
 
     if (config.channels) {
-      for (const [key, channel] of Object.entries(config.channels)) {
-        if (channel == null) continue;
+      for (const [key, value] of Object.entries(config.channels)) {
+        if (value == null) continue;
+        const channel =
+          value instanceof MastraChannel ? value : new ChatAdapterChannel({ adapter: value, platform: key });
         channel.__setAgent(this);
         this.#channels[key] = channel;
       }

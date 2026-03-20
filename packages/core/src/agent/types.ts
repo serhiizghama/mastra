@@ -1,7 +1,9 @@
 import type { GenerateTextOnStepFinishCallback } from '@internal/ai-sdk-v4';
 import type { ProviderDefinedTool } from '@internal/external-types';
+import type { Adapter } from 'chat';
 import type { JSONSchema7 } from 'json-schema';
 import type { ZodSchema } from 'zod/v3';
+
 import type { MastraChannel } from '../channels/base';
 import type { MastraScorer, MastraScorers, ScoringSamplingConfig } from '../evals';
 import type {
@@ -297,8 +299,12 @@ export interface AgentConfig<
   /**
    * Messaging channels the agent communicates over (e.g. Slack, Discord).
    * Webhook routes are auto-registered when the agent is added to Mastra.
+   *
+   * Accepts either a `MastraChannel` instance (e.g. `SlackChannel`) or a raw
+   * Chat SDK `Adapter` (e.g. `new DiscordAdapter(...)`) which will be
+   * automatically wrapped in a `ChatAdapterChannel`.
    */
-  channels?: Record<string, MastraChannel>;
+  channels?: Record<string, MastraChannel | Adapter>;
   /**
    * Workspace for file storage and code execution.
    * When configured, workspace tools are automatically injected into the agent.
