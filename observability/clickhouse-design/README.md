@@ -10,14 +10,14 @@ This file is now the overview and entry point for the ClickHouse `v-next` observ
 
 ## Design Set
 
-- [Shared Design](./clickhouse-v-next-observability-shared.md)
-- [Discovery Design](./clickhouse-v-next-observability-discovery.md)
-- [Physical Types](./clickhouse-v-next-observability-physical-types.md)
-- [Span Events](./clickhouse-v-next-observability-span-events.md)
-- [Metric Events](./clickhouse-v-next-observability-metric-events.md)
-- [Log Events](./clickhouse-v-next-observability-log-events.md)
-- [Score Events](./clickhouse-v-next-observability-score-events.md)
-- [Feedback Events](./clickhouse-v-next-observability-feedback-events.md)
+- [Shared Design](./shared.md)
+- [Span Events](./span-events.md)
+- [Metric Events](./metric-events.md)
+- [Log Events](./log-events.md)
+- [Score Events](./score-events.md)
+- [Feedback Events](./feedback-events.md)
+- [Discovery Design](./discovery.md)
+- [Physical Types](./physical-types.md)
 
 ## Core v0 Decisions
 
@@ -64,10 +64,3 @@ Important note:
 
 - this document set is intentionally about steady-state `v-next` design, not transition mechanics
 - migration, cutover, and coexistence planning should not block v0 implementation work
-
-## Related Material
-
-- [Metrics Costing Design](./metrics-costing-design.md)
-- [Metrics Costing Design Review](./metrics-costing-design-review.md)
-- [Codex Review](./clickhosue-v-next-observability-codex-review.md)
-- [Claude Review](./clickhosue-v-next-observability-claude-review.md)
