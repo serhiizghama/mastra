@@ -64,3 +64,8 @@ Important note:
 
 - this document set is intentionally about steady-state `v-next` design, not transition mechanics
 - migration, cutover, and coexistence planning should not block v0 implementation work
+
+## AI Agent Reviews
+
+- [Claude Code Review](./claude-review.md)
+- [Codex Review](./codex-review.md)
