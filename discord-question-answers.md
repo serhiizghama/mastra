@@ -4,7 +4,7 @@ Generated: 2026-03-25
 
 ---
 
-## #14647 — Best storage strategy for Mastra on Cloudflare Workers — query volume concerns
+## [#14647](https://github.com/mastra-ai/mastra/issues/14647) — Best storage strategy for Mastra on Cloudflare Workers — query volume concerns
 
 **Question:** Running Mastra on CF Workers with PostgresStore (Neon HTTP driver) results in 20-70 HTTP queries per `agent.stream()` call. How to reduce this?
 
@@ -79,7 +79,7 @@ const storage = new MastraCompositeStore({
 
 ---
 
-## #13983 — Question on Workspace Skills: When to Use Them?
+## [#13983](https://github.com/mastra-ai/mastra/issues/13983) — Question on Workspace Skills: When to Use Them?
 
 **Question:** When should I use skills vs a strong system prompt vs workflows for company-specific agent tasks?
 
@@ -153,7 +153,7 @@ Keep the system prompt **lean** (identity + rules) and put detailed task guidanc
 
 ---
 
-## #13196 — Best way to build support agent intent layer
+## [#13196](https://github.com/mastra-ai/mastra/issues/13196) — Best way to build support agent intent layer
 
 **Question:** Best way to build a support agent that detects intent and routes to sub-agents? Using RAG-based classification, LLM-based detection, or supervisor pattern?
 
@@ -259,7 +259,7 @@ Start with the **supervisor pattern** — it works well with clear agent descrip
 
 ---
 
-## #12452 — Cannot Disable Memory with Runtime Context?
+## [#12452](https://github.com/mastra-ai/mastra/issues/12452) — Cannot Disable Memory with Runtime Context?
 
 **Question:** Can memory be disabled dynamically using RuntimeContext per request?
 
@@ -335,7 +335,7 @@ All `MemoryConfigInternal` options (`lastMessages`, `semanticRecall`, `workingMe
 
 ---
 
-## #13029 — Is there a way to know the cost of a built-in Scorer?
+## [#13029](https://github.com/mastra-ai/mastra/issues/13029) — Is there a way to know the cost of a built-in Scorer?
 
 **Question:** Can I get input/output token usage metadata from built-in scorers (evals)?
 
@@ -391,7 +391,7 @@ This is a known limitation. The infrastructure for token tracking exists in the 
 
 ---
 
-## #14658 — Output processors in a Supervisor agent architecture (streaming)
+## [#14658](https://github.com/mastra-ai/mastra/issues/14658) — Output processors in a Supervisor agent architecture (streaming)
 
 **Question:** Is there a way to programmatically modify the output result of a subagent before being injected to the supervisor agent?
 
@@ -457,7 +457,7 @@ The `feedback` string is injected into the supervisor's message stream and becom
 
 ---
 
-## #13640 — Is there a way to modify user messages sent to LLM but NOT persist?
+## [#13640](https://github.com/mastra-ai/mastra/issues/13640) — Is there a way to modify user messages sent to LLM but NOT persist?
 
 **Question:** Can I transform user messages for the LLM without storing the transformed version?
 
@@ -522,7 +522,7 @@ processors: [
 
 ---
 
-## #13922 — Working Memory update blocking response stream — architecture question
+## [#13922](https://github.com/mastra-ai/mastra/issues/13922) — Working Memory update blocking response stream — architecture question
 
 **Question:** (1) Why are WM updates coupled to the agent's tool-calling loop? (2) Can `memory.updateWorkingMemory()` be called programmatically outside the loop? (3) How does `version: 'vnext'` work?
 
