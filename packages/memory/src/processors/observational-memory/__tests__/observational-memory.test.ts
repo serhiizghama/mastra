@@ -17284,3 +17284,52 @@ describe('Message ordering regressions', () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 });
+
+describe('emitProgress status part', () => {
+  it('emits data-om-status as transient so the OutputWriter does not persist it', async () => {
+    const storage = createInMemoryStorage();
+    const threadId = 'om-status-thread';
+    const resourceId = 'om-status-resource';
+
+    const om = new ObservationalMemory({
+      storage,
+      scope: 'thread',
+      observation: { messageTokens: 1000 },
+      reflection: { observationTokens: 1000 },
+    });
+
+    const record = await storage.initializeObservationalMemory({
+      threadId,
+      resourceId,
+      scope: 'thread',
+      config: {},
+    });
+
+    const customCalls: any[] = [];
+    const writer = {
+      custom: async (part: any) => {
+        customCalls.push(part);
+      },
+      write: async () => {},
+      close: async () => {},
+    } as any;
+
+    await om.emitProgress({
+      record,
+      pendingTokens: 500,
+      threshold: 1000,
+      effectiveObservationTokensThreshold: 1000,
+      currentObservationTokens: 0,
+      writer,
+      stepNumber: 1,
+      threadId,
+      resourceId,
+    });
+
+    const statusParts = customCalls.filter(part => part?.type === 'data-om-status');
+    expect(statusParts).toHaveLength(1);
+    // Without transient the OutputWriter persists this snapshot as a standalone
+    // assistant message, polluting message history (see #18869).
+    expect(statusParts[0].transient).toBe(true);
+  });
+});
