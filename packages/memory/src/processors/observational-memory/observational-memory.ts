@@ -2664,7 +2664,9 @@ ${formattedMessages}
       omDebug(
         `[OM:status] step=${stepNumber} msgs=${pendingTokens}/${threshold} obs=${currentObservationTokens}/${effectiveObservationTokensThreshold} gen=${record.generationCount}`,
       );
-      await writer.custom(statusPart).catch(() => {});
+      // Transient like every other OM marker: this snapshot is for polling UIs and is never
+      // persisted (no persistMarkerToStorage call), so the OutputWriter must not save it.
+      await writer.custom({ ...statusPart, transient: true }).catch(() => {});
     }
   }
 
