@@ -1362,6 +1362,28 @@ describe('DefaultExecutionEngine.fmtReturnValue stepExecutionPath and payload de
 
     expect(result.steps.step1.payload).toBe(circular);
   });
+
+  it('should retain (not dedup) oversized payloads instead of fully serializing them', async () => {
+    // Output processors run this comparison once per stream chunk over an ever-growing
+    // context; the structural compare is bounded so it can't do O(n²) work. An oversized
+    // payload equal to the previous output is simply kept rather than serialized in full.
+    const big = { blob: 'x'.repeat(200_000) };
+    const stepResults: Record<string, StepResult<any, any, any, any>> = {
+      input: JSON.parse(JSON.stringify(big)) as any,
+      step1: {
+        status: 'success',
+        output: { value: 2 },
+        payload: JSON.parse(JSON.stringify(big)),
+        startedAt: 1,
+        endedAt: 2,
+      },
+    };
+    const lastOutput: StepResult<any, any, any, any> = stepResults.step1!;
+
+    const result = await engine.fmtReturnValuePublic(pubsub, stepResults, lastOutput, undefined, ['step1']);
+
+    expect(result.steps.step1.payload).toEqual(big);
+  });
 });
 
 describe('DefaultExecutionEngine.deserializeRequestContext', () => {
