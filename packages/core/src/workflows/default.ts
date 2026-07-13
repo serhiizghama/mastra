@@ -49,6 +49,44 @@ import type {
 // Re-export ExecutionContext for backwards compatibility
 export type { ExecutionContext } from './types';
 
+const DEDUP_STRINGIFY_MAX_CHARS = 32_768;
+const BOUNDED_STRINGIFY_ABORT = Symbol('bounded-stringify-abort');
+
+// JSON.stringify that aborts (returns null) once the serialized size passes maxChars,
+// so a single call can't do unbounded work. Rethrows real serialization errors.
+function boundedStringify(value: unknown, maxChars: number): string | null {
+  let chars = 0;
+  try {
+    return JSON.stringify(value, (key, val) => {
+      chars += key.length + (typeof val === 'string' ? val.length : 8);
+      if (chars > maxChars) throw BOUNDED_STRINGIFY_ABORT;
+      return val;
+    });
+  } catch (e) {
+    if (e === BOUNDED_STRINGIFY_ABORT) return null;
+    throw e;
+  }
+}
+
+// Structural equality with bounded work. This dedup only ever fires for small step
+// payloads, but agent output processors run fmtReturnValue once per stream chunk over
+// the agentic loop's accumulated context (streamParts grows every chunk), so an
+// unbounded JSON.stringify becomes O(chunks × context size) and pins a core on long
+// streams. Cap the serializer and treat oversized or non-serializable payloads as
+// non-matching — the dedup is optional, so the payload is simply retained. See #19373.
+function payloadsMatch(a: unknown, b: unknown): boolean {
+  if (a === b) return true;
+  try {
+    const aJson = boundedStringify(a, DEDUP_STRINGIFY_MAX_CHARS);
+    if (aJson === null) return false;
+    const bJson = boundedStringify(b, DEDUP_STRINGIFY_MAX_CHARS);
+    return bJson !== null && aJson === bJson;
+  } catch {
+    // non-serializable payload — treat as not matching
+    return false;
+  }
+}
+
 /**
  * Default implementation of the ExecutionEngine
  */
@@ -577,16 +615,7 @@ export class DefaultExecutionEngine extends ExecutionEngine {
 
         // Remove payload if it matches the output of the previous step (structural comparison
         // handles deserialized data where reference equality would fail)
-        let payloadMatchesPrevious = false;
-        if (hasPreviousOutput) {
-          try {
-            payloadMatchesPrevious =
-              optimizedStep.payload === previousOutput ||
-              JSON.stringify(optimizedStep.payload) === JSON.stringify(previousOutput);
-          } catch {
-            // non-serializable payload — treat as not matching
-          }
-        }
+        const payloadMatchesPrevious = hasPreviousOutput && payloadsMatch(optimizedStep.payload, previousOutput);
         if (payloadMatchesPrevious) {
           delete optimizedStep.payload;
         }
